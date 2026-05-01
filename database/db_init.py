@@ -4,13 +4,11 @@ from database.db_config import DB_PATH
 import sqlite3
 
 
-
 def create_database():
-    # Connect to database file (creates it if it doesn't exist)
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
-    # Enable foreign key support
+    # Enable foreign keys
     cursor.execute("PRAGMA foreign_keys = ON")
 
     # =========================
@@ -24,7 +22,6 @@ def create_database():
     )
     """)
 
-    # Insert default librarian account (only once)
     cursor.execute("""
     INSERT OR IGNORE INTO librarian (id, username, password)
     VALUES (1, 'admin', 'admin123')
@@ -38,11 +35,11 @@ def create_database():
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
         username TEXT NOT NULL UNIQUE,
+        national_id TEXT NOT NULL UNIQUE,
         age INTEGER NOT NULL CHECK(age > 0),
         email TEXT NOT NULL UNIQUE,
         password TEXT NOT NULL,
         is_verified INTEGER DEFAULT 0,
-        is_kicked INTEGER DEFAULT 0,
         fine_amount REAL DEFAULT 0,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
@@ -145,15 +142,11 @@ def create_database():
     )
     """)
 
-    # Save all changes
     conn.commit()
-
-    # Close connection
     conn.close()
 
-    print("Database and tables created successfully!")
+    print("Database created successfully!")
 
 
-# Run file directly
 if __name__ == "__main__":
     create_database()

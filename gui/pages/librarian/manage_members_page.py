@@ -108,7 +108,12 @@ class ManageMembersPage(QWidget):
             username = user[2]
             age = user[3]
             email = user[4]
-            is_verified = "Yes" if user[6] == 1 else "No"
+            
+            if user[6] == 1:
+                is_verified = "Yes"
+            elif user[6] == 0:
+                is_verified = "No"
+                
             fines = f"${user[8]:.2f}"
 
             row_data = [
@@ -139,6 +144,13 @@ class ManageMembersPage(QWidget):
         if user_id is None:
             return
 
+        selected_row = self.table.currentRow()
+        verified_status = self.table.item(selected_row, 5).text()
+
+        if verified_status == "Yes":
+            show_info(self, "Already Verified", "This member is already verified.")
+            return
+
         self.db.verify_user(user_id)
         show_info(self, "Success", "Member verified successfully.")
         self.load_members()
@@ -148,13 +160,28 @@ class ManageMembersPage(QWidget):
         if user_id is None:
             return
 
+        selected_row = self.table.currentRow()
+        verified_status = self.table.item(selected_row, 5).text()
+
+        if verified_status == "No":
+            show_info(self, "Already Unverified", "This member is already unverified.")
+            return
+
         self.db.unverify_user(user_id)
-        show_info(self, "Success", "Member is now unverified.")
+        show_info(self, "Success", "Member unverified successfully.")
         self.load_members()
 
     def clear_selected_fines(self):
         user_id = self.get_selected_user_id()
         if user_id is None:
+            return
+
+        selected_row = self.table.currentRow()
+        fines_text = self.table.item(selected_row, 6).text()
+        fines_amount = float(fines_text.replace("$", ""))
+
+        if fines_amount == 0:
+            show_info(self, "No Fines", "This member has no fines to clear.")
             return
 
         self.db.clear_fines(user_id)

@@ -1,33 +1,60 @@
-from database.database_manager import DatabaseManager
+import sqlite3
+import os
 
-db = DatabaseManager()
+# --- DB PATH (correct + safe) ---
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+db_path = os.path.join(BASE_DIR, "database", "library.db")
 
+print("Using database:", db_path)
+
+conn = sqlite3.connect(db_path)
+cursor = conn.cursor()
+
+# --- Ensure table exists (prevents "no such table" error) ---
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    username TEXT NOT NULL UNIQUE,
+    national_id TEXT NOT NULL UNIQUE,
+    age INTEGER NOT NULL CHECK(age > 0),
+    email TEXT NOT NULL UNIQUE,
+    password TEXT NOT NULL,
+    is_verified INTEGER DEFAULT 0,
+    is_kicked INTEGER DEFAULT 0,
+    fine_amount REAL DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)
+""")
+
+# --- Seed data ---
 users = [
-    ("Ali Hassan", "ali", 22, "ali@example.com", "Ali12345", 1),
-    ("Sara Ahmed", "sara", 25, "sara@example.com", "Sara12345", 0),
-    ("Omar Khaled", "omar", 30, "omar@example.com", "Omar12345", 0),
-    ("Mona Saleh", "mona", 21, "mona@example.com", "Mona12345", 0),
-    ("Yousef Nader", "yousef", 28, "yousef@example.com", "Yousef12345", 0),
+    ("Emre Yılmaz", "emre", "12345678901", 27, "emre@example.com", "Emre12345", 1),
+    ("Zeynep Kaya", "zeynep", "23456789012", 24, "zeynep@example.com", "Zeynep12345", 1),
+    ("Ahmet Demir", "ahmet", "34567890123", 31, "ahmet@example.com", "Ahmet12345", 0),
+    ("Elif Şahin", "elif", "45678901234", 22, "elif@example.com", "Elif12345", 0),
+    ("Can Arslan", "can", "56789012345", 29, "can@example.com", "Can12345", 0),
+    ("Merve Çelik", "merve", "67890123456", 26, "merve@example.com", "Merve12345", 1),
+    ("Burak Koç", "burak", "78901234567", 34, "burak@example.com", "Burak12345", 0),
 ]
 
-for name, username, age, email, password, verified in users:
-    success = db.register_user(name, username, age, email, password)
-
-    if success:
-        print(f"Added user: {username}")
-    else:
-        print(f"Skipped existing user: {username}")
-
-    if verified == 1:
-        conn = db.connect()
-        cursor = conn.cursor()
+# --- Insert users ---
+for user in users:
+    try:
         cursor.execute("""
-            UPDATE users
-            SET is_verified = 1
-            WHERE username = ?
-        """, (username,))
-        conn.commit()
-        conn.close()
-        print(f"Verified user: {username}")
+            INSERT INTO users (
+                name, username, national_id, age, email, password, is_verified
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        """, user)
+
+        print(f"Added user: {user[1]}")
+
+    except sqlite3.IntegrityError:
+        print(f"Skipped existing user: {user[1]}")
+
+# --- Commit + close ---
+conn.commit()
+conn.close()
 
 print("User seeding finished.")

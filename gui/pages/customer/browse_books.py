@@ -190,17 +190,56 @@ class BrowseBooksPage(QWidget):
 
         self.filtered_books = filtered
         self.display_books(self.filtered_books)
+        
+        
     def handle_add_to_cart(self, book_id):
         from functions.cart_functions import add_book_to_cart
         from functions.ui_messages import show_info, show_error
 
-        success, message = add_book_to_cart(
-            self.main_window.current_user,
-            book_id
-        )
+        try:
+            user = self.main_window.current_user
 
-        if success:
-            show_info(self, "Cart", message)
-        else:
-            show_error(self, "Cart", message)
-    
+            if not user:
+                show_error(self, "Error", "No user is currently logged in.")
+                return
+
+            # Works if current_user is tuple/list OR dictionary
+            if isinstance(user, dict):
+                user_id = user.get("id") or user.get("user_id")
+            else:
+                user_id = user[0]
+
+            if not user_id:
+                show_error(self, "Error", "Could not find current user ID.")
+                return
+
+            conn = self.db.connect()
+            cursor = conn.cursor()
+
+            cursor.execute(
+                "SELECT fine_amount FROM users WHERE id = ?",
+                (user_id,)
+            )
+
+            result = cursor.fetchone()
+            conn.close()
+
+            fine_amount = result[0] if result and result[0] is not None else 0
+
+            if float(fine_amount) > 0:
+                show_error(
+                    self,
+                    "Borrowing Blocked",
+                    f"You cannot borrow books until you pay your outstanding fine of ${fine_amount}."
+                )
+                return
+
+            success, message = add_book_to_cart(user, book_id)
+
+            if success:
+                show_info(self, "Cart", message)
+            else:
+                show_error(self, "Cart", message)
+
+        except Exception as e:
+            show_error(self, "Crash Error", str(e))

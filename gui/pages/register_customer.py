@@ -87,6 +87,9 @@ class RegisterCustomerPage(QWidget):
         self.username = QLineEdit()
         self.username.setPlaceholderText("Username")
 
+        self.national_id = QLineEdit()
+        self.national_id.setPlaceholderText("National ID / Kimlik No (11 digits)")
+
         self.age = QLineEdit()
         self.age.setPlaceholderText("Age")
 
@@ -96,7 +99,7 @@ class RegisterCustomerPage(QWidget):
         self.password = QLineEdit()
         self.password.setPlaceholderText("Password")
         self.password.setEchoMode(QLineEdit.Password)
-        
+
         self.terms_checkbox = QCheckBox("I accept the Terms of Use and Privacy Policy")
         self.terms_checkbox.setStyleSheet("""
             QCheckBox {
@@ -105,7 +108,6 @@ class RegisterCustomerPage(QWidget):
                 font-size: 13px;
             }
         """)
-        
 
         register_btn = QPushButton("Create Account")
         back_btn = QPushButton("Back")
@@ -113,6 +115,7 @@ class RegisterCustomerPage(QWidget):
         card_layout.addWidget(title)
         card_layout.addWidget(self.name)
         card_layout.addWidget(self.username)
+        card_layout.addWidget(self.national_id)
         card_layout.addWidget(self.age)
         card_layout.addWidget(self.email)
         card_layout.addWidget(self.password)
@@ -131,16 +134,25 @@ class RegisterCustomerPage(QWidget):
     def register(self):
         name = self.name.text().strip()
         username = self.username.text().strip()
+        national_id = self.national_id.text().strip()
         age = self.age.text().strip()
         email = self.email.text().strip()
         password = self.password.text().strip()
-        
+
         if not self.terms_checkbox.isChecked():
             show_error(self, "Error", "You must accept the Terms of Use and Privacy Policy to register.")
             return
 
-        if not all([name, username, age, email, password]):
+        if not all([name, username, national_id, age, email, password]):
             show_error(self, "Error", "All fields are required")
+            return
+
+        if not national_id.isdigit():
+            show_error(self, "Error", "National ID must contain only numbers.")
+            return
+
+        if len(national_id) != 11:
+            show_error(self, "Error", "National ID must be exactly 11 digits.")
             return
 
         if not age.isdigit():
@@ -176,7 +188,7 @@ class RegisterCustomerPage(QWidget):
             return
 
         success = self.db.register_user(
-            name, username, age, email, password
+            name, username, national_id, age, email, password
         )
 
         if success:
@@ -184,11 +196,12 @@ class RegisterCustomerPage(QWidget):
             self.clear_fields()
             self.main_window.go_to_login_selection()
         else:
-            show_error(self, "Error", "Username or email already exists")
+            show_error(self, "Error", "Username, email, or National ID already exists")
 
     def clear_fields(self):
         self.name.clear()
         self.username.clear()
+        self.national_id.clear()
         self.age.clear()
         self.email.clear()
         self.password.clear()

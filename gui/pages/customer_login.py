@@ -106,13 +106,13 @@ class CustomerLoginPage(QWidget):
         username = self.username.text().strip()
         password = self.password.text().strip()
 
-        success, result = check_customer_login(username, password)
+        success, message, user = check_customer_login(username, password)
 
         if not success:
-            show_error(self, "Login Failed", result)
+            show_error(self, "Login Failed", message)
             return
 
-        self.main_window.current_user = result
+        self.main_window.current_user = user
         self.main_window.page_customer_dashboard.update_customer_info()
         self.main_window.go_to_customer_dashboard()
 
