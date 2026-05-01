@@ -17,7 +17,7 @@ def check_customer_login(username, password):
     cursor = conn.cursor()
 
     cursor.execute("""
-        SELECT id, name, username, password, is_verified, is_kicked, fine_amount
+        SELECT id, name, username, password, is_verified, fine_amount
         FROM users
         WHERE username = ?
     """, (username,))
@@ -26,17 +26,14 @@ def check_customer_login(username, password):
     conn.close()
 
     if not user:
-        return False, "User not found"
+        return False, "User not found", None
 
-    user_id, name, db_username, db_password, is_verified, is_kicked, fine_amount = user
-
-    if is_kicked == 1:
-        return False, "You have been kicked out from our library!"
+    user_id, name, db_username, db_password, is_verified, fine_amount = user
 
     if password != db_password:
-        return False, "Incorrect password"
+        return False, "Incorrect password", None
 
-    return True, {
+    return True, "Login successful", {
         "id": user_id,
         "name": name,
         "username": db_username,

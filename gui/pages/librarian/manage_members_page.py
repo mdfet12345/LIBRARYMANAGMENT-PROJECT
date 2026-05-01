@@ -67,10 +67,9 @@ class ManageMembersPage(QWidget):
         title.setObjectName("title")
 
         self.table = QTableWidget()
-        self.table.setColumnCount(7)
+        self.table.setColumnCount(8)
         self.table.setHorizontalHeaderLabels([
-            "ID", "Name", "Username", "Age", "Email",
-            "Verified", "Fines"
+            "ID", "Name", "Username", "National ID", "Age", "Email", "Verified", "Fines"
         ])
         self.table.setSelectionBehavior(QTableWidget.SelectRows)
         self.table.setEditTriggers(QTableWidget.NoEditTriggers)
@@ -106,19 +105,14 @@ class ManageMembersPage(QWidget):
             user_id = user[0]
             name = user[1]
             username = user[2]
-            age = user[3]
-            email = user[4]
-            
-            if user[6] == 1:
-                is_verified = "Yes"
-            elif user[6] == 0:
-                is_verified = "No"
-                
+            national_id = user[3]
+            age = user[4]
+            email = user[5]
+            is_verified = "Yes" if user[7] == 1 else "No"
             fines = f"${user[8]:.2f}"
 
             row_data = [
-                user_id, name, username, age, email,
-                is_verified, fines
+                user_id, name, username, national_id, age, email, is_verified, fines
             ]
 
             self.table.insertRow(row_index)
@@ -130,14 +124,14 @@ class ManageMembersPage(QWidget):
 
         self.table.resizeColumnsToContents()
 
-    def get_selected_user_id(self):
-        selected_row = self.table.currentRow()
+        def get_selected_user_id(self):
+            selected_row = self.table.currentRow()
 
-        if selected_row < 0:
-            show_error(self, "Error", "Please select a member first.")
-            return None
+            if selected_row < 0:
+                show_error(self, "Error", "Please select a member first.")
+                return None
 
-        return int(self.table.item(selected_row, 0).text())
+            return int(self.table.item(selected_row, 0).text())
 
     def verify_selected_member(self):
         user_id = self.get_selected_user_id()
