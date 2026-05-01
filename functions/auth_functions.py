@@ -1,17 +1,15 @@
 import sqlite3
 from database.db_config import DB_PATH
 
+# librarian login
 
-# -------------------------
-# LIBRARIAN LOGIN (HARDCODED)
-# -------------------------
 def check_librarian_login(username, password):
     return username == "admin" and password == "admin123"
 
 
-# -------------------------
-# CUSTOMER LOGIN (DB CHECK)
-# -------------------------
+
+# customer login
+
 def check_customer_login(username, password):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
@@ -31,7 +29,7 @@ def check_customer_login(username, password):
     user_id, name, db_username, db_password, is_verified, fine_amount = user
 
     if password != db_password:
-        return False, "Incorrect password", None
+        return False, "incorrect password", None
 
     return True, "Login successful", {
         "id": user_id,

@@ -2,7 +2,7 @@ from database.database_manager import DatabaseManager
 
 db = DatabaseManager()
 
-# Test: add a book
+# testing the add a book
 db.add_book(
     title="Test Book",
     author="John Doe",
@@ -14,11 +14,11 @@ db.add_book(
     availability_status="Available"
 )
 
-# Test: get books
+# testing the get books
 books = db.get_all_books()
 print(books)
 
-# Test: register user
+# testing the register user
 result = db.register_user(
     "Test User",
     "testuser",

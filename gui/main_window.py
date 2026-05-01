@@ -21,24 +21,23 @@ class MainWindow(QMainWindow):
         self.setMinimumSize(1200, 700)
         
 
-        # CENTRAL WIDGET
+        # central widget
         self.central_widget = QWidget()
         self.setCentralWidget(self.central_widget)
 
-        # MAIN LAYOUT (FIXED)
+        # main layout
         self.layout = QVBoxLayout()
-        self.layout.setContentsMargins(0, 0, 0, 0)   # ❗ remove margins
-        self.layout.setSpacing(0)                    # ❗ remove gaps
+        self.layout.setContentsMargins(0, 0, 0, 0)   
+        self.layout.setSpacing(0)                    
         self.central_widget.setLayout(self.layout)
 
-        # STACK (FULL EXPAND)
+        # stacked widget
         self.stack = QStackedWidget()
         self.stack.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.layout.addWidget(self.stack)
 
-        # -------------------------
-        # PAGES
-        # -------------------------
+        # pages
+
         self.page_login_selection = LoginSelectionPage(self)
         self.page_librarian = LibrarianLoginPage(self)
         self.page_customer = CustomerLoginPage(self)
@@ -56,15 +55,14 @@ class MainWindow(QMainWindow):
 
         self.stack.setCurrentWidget(self.page_login_selection)
 
-        # USER SESSION
+        # user session
         self.current_user = None
 
-        # STYLE
+        # apply tyle
         self.apply_styles()
 
-    # -------------------
-    # NAVIGATION
-    # -------------------
+    # navigation
+    
     def go_to_login_selection(self):
         self.stack.setCurrentWidget(self.page_login_selection)
 
@@ -92,9 +90,8 @@ class MainWindow(QMainWindow):
         self.page_librarian_dashboard.open_dashboard()
         self.stack.setCurrentWidget(self.page_librarian_dashboard)
 
-    # -------------------
-    # STYLE (IMPROVED)
-    # -------------------
+    # style 
+
     def apply_styles(self):
         self.setStyleSheet("""
                 QMainWindow {

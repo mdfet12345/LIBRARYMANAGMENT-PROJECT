@@ -1,5 +1,3 @@
-# database/db_init.py
-
 from database.db_config import DB_PATH
 import sqlite3
 
@@ -8,12 +6,11 @@ def create_database():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
-    # Enable foreign keys
+    # foreign key
     cursor.execute("PRAGMA foreign_keys = ON")
 
-    # =========================
-    # 1. LIBRARIAN TABLE
-    # =========================
+    # librarian table
+    
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS librarian (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -27,9 +24,8 @@ def create_database():
     VALUES (1, 'admin', 'admin123')
     """)
 
-    # =========================
-    # 2. USERS TABLE
-    # =========================
+    #  users table
+    
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -45,9 +41,8 @@ def create_database():
     )
     """)
 
-    # =========================
-    # 3. BOOKS TABLE
-    # =========================
+    # books table
+
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS books (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -61,9 +56,8 @@ def create_database():
     )
     """)
 
-    # =========================
-    # 4. CART TABLE
-    # =========================
+    # cart table
+
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS cart (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -76,9 +70,9 @@ def create_database():
     )
     """)
 
-    # =========================
-    # 5. BORROWED BOOKS TABLE
-    # =========================
+
+    # borrowed books table
+
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS borrowed_books (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -93,9 +87,8 @@ def create_database():
     )
     """)
 
-    # =========================
-    # 6. RETURN REQUESTS TABLE
-    # =========================
+    # return requests table
+    
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS return_requests (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -109,9 +102,8 @@ def create_database():
     )
     """)
 
-    # =========================
-    # 7. MESSAGES TABLE
-    # =========================
+    # messages table
+
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS messages (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -126,9 +118,9 @@ def create_database():
     )
     """)
 
-    # =========================
-    # 8. BOOK REQUESTS TABLE
-    # =========================
+
+    # book requests table
+    
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS book_requests (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -145,7 +137,8 @@ def create_database():
     conn.commit()
     conn.close()
 
-    print("Database created successfully!")
+    # testing
+    print("Database created")
 
 
 if __name__ == "__main__":

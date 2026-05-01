@@ -144,23 +144,23 @@ class AddBookPage(QWidget):
         copies = self.copies_input.text().strip()
         
         if len(title) > 50:
-            show_error(self, "Error", "Book title cannot exceed 50 characters.")
+            show_error(self, "Error", "Book title cannot be more than 50 characters")
             return
         
         if len(author) > 30:
-            show_error(self, "Error", "Author name cannot exceed 30 characters.")
+            show_error(self, "Error", "Author name cannot be more than 30 characters")
             return
 
         if not all([title, author, pages, copies]):
-            show_error(self, "Error", "All fields are required.")
+            show_error(self, "Error", "All fields are required")
             return
 
         if not pages.isdigit() or int(pages) <= 0:
-            show_error(self, "Error", "Pages must be a positive number.")
+            show_error(self, "Error", "Pages must be a positive number")
             return
 
         if not copies.isdigit() or int(copies) <= 0:
-            show_error(self, "Error", "Copies must be a positive number.")
+            show_error(self, "Error", "Copies must be a positive number")
             return
 
         self.db.add_book(
@@ -172,7 +172,7 @@ class AddBookPage(QWidget):
             image_path=self.image_path
         )
 
-        show_info(self, "Success", "Book added successfully.")
+        show_info(self, "Success", "Book added successfully")
         self.clear_fields()
 
     def clear_fields(self):

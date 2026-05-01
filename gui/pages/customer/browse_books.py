@@ -122,20 +122,17 @@ class BrowseBooksPage(QWidget):
 
     def get_column_count(self):
         viewport_width = self.scroll.viewport().width()
-
         card_width = 220
         spacing = 18
-
+        
         columns = (viewport_width + spacing) // (card_width + spacing)
-
-        # 🔥 Force minimum of 4 columns at default size
         return max(4, columns)
 
     def display_books(self, books):
         self.clear_grid()
 
         if not books:
-            empty_label = QLabel("No books found.")
+            empty_label = QLabel("No books found")
             empty_label.setAlignment(Qt.AlignCenter)
             empty_label.setStyleSheet("""
                 QLabel {
@@ -149,7 +146,7 @@ class BrowseBooksPage(QWidget):
             return
 
         max_columns = self.get_column_count()
-
+        
         row = 0
         col = 0
 
@@ -200,17 +197,16 @@ class BrowseBooksPage(QWidget):
             user = self.main_window.current_user
 
             if not user:
-                show_error(self, "Error", "No user is currently logged in.")
+                show_error(self, "Error", "No user is currently logged in")
                 return
 
-            # Works if current_user is tuple/list OR dictionary
             if isinstance(user, dict):
                 user_id = user.get("id") or user.get("user_id")
             else:
                 user_id = user[0]
 
             if not user_id:
-                show_error(self, "Error", "Could not find current user ID.")
+                show_error(self, "Error", "Could not find current user ID")
                 return
 
             conn = self.db.connect()
@@ -230,7 +226,7 @@ class BrowseBooksPage(QWidget):
                 show_error(
                     self,
                     "Borrowing Blocked",
-                    f"You cannot borrow books until you pay your outstanding fine of ${fine_amount}."
+                    f"You cannot borrow books until you pay your fine of ${fine_amount}"
                 )
                 return
 

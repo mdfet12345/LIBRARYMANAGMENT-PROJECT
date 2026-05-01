@@ -129,7 +129,7 @@ class ManageBooksPage(QWidget):
         self.clear_grid()
 
         if not books:
-            empty_label = QLabel("No books found.")
+            empty_label = QLabel("No books found")
             empty_label.setAlignment(Qt.AlignCenter)
             empty_label.setStyleSheet("""
                 QLabel {
@@ -202,7 +202,7 @@ class ManageBooksPage(QWidget):
             return
 
         self.db.delete_book(book_id)
-        show_info(self, "Success", "Book deleted successfully.")
+        show_info(self, "Success", "Book deleted successfully")
         self.load_books()
 
     def update_book(self, book):
@@ -462,7 +462,7 @@ class UpdateBookDialog(QDialog):
             "Novel", "Historical", "Religion", "Science", "Technology",
             "Programming", "Fantasy", "Classic", "Finance", "Business",
             "Self Development", "Philosophy", "Biography", "Mystery",
-            "Romance", "Poetry", "Education", "Health", "Politics", "Other"
+            "Romance", "Poetry", "Education", "Health", "Politics", "Arabic", "Turkish", "Other"
         ])
 
         index = self.category_input.findText(self.book[3])
@@ -520,15 +520,15 @@ class UpdateBookDialog(QDialog):
         copies = self.copies_input.text().strip()
 
         if not all([title, author, pages, copies]):
-            show_error(self, "Error", "All fields are required.")
+            show_error(self, "Error", "All fields are required")
             return
 
         if len(title) > 50:
-            show_error(self, "Error", "Book title cannot exceed 50 characters.")
+            show_error(self, "Error", "Book title cannot be more than 50 characters")
             return
 
         if len(author) > 30:
-            show_error(self, "Error", "Author name cannot exceed 30 characters.")
+            show_error(self, "Error", "Author name cannot be more than 30 characters.")
             return
 
         if not pages.isdigit() or int(pages) <= 0:

@@ -1,8 +1,5 @@
-# database/database_manager.py
-
 import sqlite3
 from database.db_config import DB_PATH
-
 
 class DatabaseManager:
     def __init__(self):
@@ -13,9 +10,7 @@ class DatabaseManager:
         conn.execute("PRAGMA foreign_keys = ON")
         return conn
 
-    # =========================
-    # USER FUNCTIONS
-    # =========================
+    # user functions
 
     def register_user(self, name, username, national_id, age, email, password):
         try:
@@ -34,11 +29,11 @@ class DatabaseManager:
             return True
 
         except sqlite3.IntegrityError as e:
-            print("Register integrity error:", e)
+            print("register integrity error:", e)
             return False
 
         except Exception as e:
-            print("Register error:", e)
+            print("register error:", e)
             return False
 
     def login_user(self, username, password):
@@ -169,9 +164,7 @@ class DatabaseManager:
         conn.close()
         return users
 
-    # =========================
-    # BOOK FUNCTIONS
-    # =========================
+    # book functions
 
     def add_book(self, title, author, category, pages, copies, image_path=None):
         conn = self.connect()
@@ -233,7 +226,7 @@ class DatabaseManager:
 
         if not result:
             conn.close()
-            return False, "Book not found."
+            return False, "Book not found"
 
         old_copies, old_available = result
         difference = copies - old_copies
@@ -241,7 +234,7 @@ class DatabaseManager:
 
         if new_available < 0:
             conn.close()
-            return False, "Copies cannot be less than currently borrowed copies."
+            return False, "Copies cannot be less than currently borrowed copies"
 
         cursor.execute("""
             UPDATE books
@@ -267,11 +260,9 @@ class DatabaseManager:
         conn.commit()
         conn.close()
 
-        return True, "Book updated successfully."
+        return True, "Book updated successfully"
 
-    # =========================
-    # CART FUNCTIONS
-    # =========================
+    # cart functions
 
     def get_cart_count(self, user_id):
         conn = self.connect()
@@ -332,18 +323,18 @@ class DatabaseManager:
 
         if not user:
             conn.close()
-            return False, "User not found."
+            return False, "User not found"
 
         is_verified = user[0]
         fine_amount = user[1] if user[1] is not None else 0
 
         if is_verified == 0:
             conn.close()
-            return False, "You aren't verified yet.\nPlease wait for the librarian to verify you."
+            return False, "You aren't verified yet \nPlease wait for the librarian to verify you."
 
         if fine_amount > 0:
             conn.close()
-            return False, f"You cannot borrow books until you pay your outstanding fine of ${fine_amount}."
+            return False, f"You cannot borrow books until you pay your fine of ${fine_amount}"
 
         cursor.execute("""
             SELECT available_copies
@@ -355,11 +346,11 @@ class DatabaseManager:
 
         if not book:
             conn.close()
-            return False, "Book not found."
+            return False, "Book not found"
 
         if book[0] <= 0:
             conn.close()
-            return False, "This book is currently out of stock."
+            return False, "This book is currently out of stock"
 
         cursor.execute("""
             SELECT id
@@ -370,7 +361,7 @@ class DatabaseManager:
 
         if cursor.fetchone():
             conn.close()
-            return False, "This book is already in your cart."
+            return False, "This book is already in your cart"
 
         cursor.execute("""
             SELECT id
@@ -382,7 +373,7 @@ class DatabaseManager:
 
         if cursor.fetchone():
             conn.close()
-            return False, "You already borrowed this book."
+            return False, "You already borrowed this book"
 
         cursor.execute("""
             SELECT COUNT(*)
@@ -403,7 +394,7 @@ class DatabaseManager:
 
         if cart_count + borrowed_count >= 3:
             conn.close()
-            return False, "You can only have 3 books at a time."
+            return False, "You can only have 3 books at a time"
 
         cursor.execute("""
             INSERT INTO cart (user_id, book_id, borrow_days)
@@ -413,7 +404,7 @@ class DatabaseManager:
         conn.commit()
         conn.close()
 
-        return True, "Book added to cart."
+        return True, "Book added to cart"
 
     def get_cart_items(self, user_id):
         conn = self.connect()
@@ -483,7 +474,7 @@ class DatabaseManager:
 
             if fine_amount > 0:
                 conn.close()
-                return False, f"You cannot borrow books until you pay your outstanding fine of ${fine_amount}."
+                return False, f"You cannot borrow books until you pay your fine of ${fine_amount}"
 
             cursor.execute("""
                 SELECT cart.id, cart.book_id, cart.borrow_days, books.available_copies
@@ -496,14 +487,14 @@ class DatabaseManager:
 
             if not cart_items:
                 conn.close()
-                return False, "Your cart is empty."
+                return False, "Your cart is empty"
 
             borrow_date = date.today()
 
             for cart_id, book_id, borrow_days, available_copies in cart_items:
                 if available_copies <= 0:
                     conn.close()
-                    return False, "One of the books is no longer available."
+                    return False, "One of the books is no longer available"
 
                 return_date = borrow_date + timedelta(days=borrow_days)
 
@@ -533,16 +524,14 @@ class DatabaseManager:
             conn.commit()
             conn.close()
 
-            return True, "Books borrowed successfully."
+            return True, "Books borrowed successfully"
 
         except Exception as e:
             conn.rollback()
             conn.close()
             return False, str(e)
 
-    # =========================
-    # MESSAGE FUNCTIONS
-    # =========================
+    # message functions
 
     def send_message(self, sender_type, sender_id, receiver_type, receiver_id, subject, message):
         conn = self.connect()
@@ -605,9 +594,7 @@ class DatabaseManager:
         conn.commit()
         conn.close()
 
-    # =========================
-    # PERSONAL BOOKS / RETURNS
-    # =========================
+    # personal books / returns
 
     def get_personal_books(self, user_id):
         conn = self.connect()
@@ -657,7 +644,7 @@ class DatabaseManager:
 
         if existing_request:
             conn.close()
-            return False, "Return request already exists."
+            return False, "Return request already exists"
 
         cursor.execute("""
             INSERT INTO return_requests
@@ -672,7 +659,7 @@ class DatabaseManager:
         conn.commit()
         conn.close()
 
-        return True, "Return request created."
+        return True, "Return request created"
 
     def get_pending_return_requests(self):
         conn = self.connect()
@@ -717,7 +704,7 @@ class DatabaseManager:
 
             if not data:
                 conn.close()
-                return False, "Invalid request."
+                return False, "invalid request"
 
             borrow_id, return_date, book_id, user_id = data
 
@@ -773,9 +760,7 @@ class DatabaseManager:
             conn.close()
             return False, str(e)
 
-    # =========================
-    # DASHBOARD / LIBRARIAN
-    # =========================
+    # dashboard / librarian
 
     def get_librarian_dashboard_stats(self):
         conn = self.connect()

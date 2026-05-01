@@ -190,13 +190,13 @@ class LibrarianMessagesPage(QWidget):
 
     def reply_to_selected_request(self):
         if not self.selected_request_id or not self.selected_request_user_id:
-            show_error(self, "Error", "Select a book request first.")
+            show_error(self, "Error", "Select a book request first")
             return
 
         reply = self.reply_input.toPlainText().strip()
 
         if not reply:
-            show_error(self, "Error", "Reply cannot be empty.")
+            show_error(self, "Error", "Reply cannot be empty")
             return
 
         self.db.send_message(
@@ -210,12 +210,12 @@ class LibrarianMessagesPage(QWidget):
 
         self.db.delete_book_request(self.selected_request_id)
 
-        show_info(self, "Success", "Reply sent and request removed.")
+        show_info(self, "Success", "Reply sent and request removed")
         self.load_requests()
 
     def delete_selected_request(self):
         if not self.selected_request_id:
-            show_error(self, "Error", "Select a book request first.")
+            show_error(self, "Error", "Select a book request first")
             return
 
         confirm = show_confirm(
@@ -228,5 +228,5 @@ class LibrarianMessagesPage(QWidget):
             return
 
         self.db.delete_book_request(self.selected_request_id)
-        show_info(self, "Success", "Book request deleted.")
+        show_info(self, "Success", "Book request deleted")
         self.load_requests()

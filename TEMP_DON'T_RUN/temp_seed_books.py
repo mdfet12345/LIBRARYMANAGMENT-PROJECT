@@ -2,9 +2,8 @@ from database.database_manager import DatabaseManager
 
 db = DatabaseManager()
 
-# -------------------------
-# CLEAR OLD BOOKS
-# -------------------------
+# clear old data
+
 conn = db.connect()
 cursor = conn.cursor()
 cursor.execute("DELETE FROM books")
@@ -13,9 +12,9 @@ conn.close()
 
 print("Old books cleared.")
 
-# -------------------------
-# NEW BOOKS WITH IMAGES
-# -------------------------
+
+# add new data
+
 books = [
     ("The Great Gatsby", "F. Scott Fitzgerald", "Novel", 180, 5, "assets/books/gatsby.jpg"),
     ("1984", "George Orwell", "Dystopian", 328, 4, "assets/books/1984.jpg"),
@@ -39,4 +38,4 @@ for book in books:
         image_path=book[5]
     )
 
-print("Books with images added successfully!")
+print("Books with images added")

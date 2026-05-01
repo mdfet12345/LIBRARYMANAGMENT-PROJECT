@@ -1,7 +1,7 @@
 import sqlite3
 import os
 
-# --- DB PATH (correct + safe) ---
+# DB path
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 db_path = os.path.join(BASE_DIR, "database", "library.db")
 
@@ -10,7 +10,7 @@ print("Using database:", db_path)
 conn = sqlite3.connect(db_path)
 cursor = conn.cursor()
 
-# --- Ensure table exists (prevents "no such table" error) ---
+# check table if exists
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS users (
 )
 """)
 
-# --- Seed data ---
+# seed data
 users = [
     ("Emre Yılmaz", "emre", "12345678901", 27, "emre@example.com", "Emre12345", 1),
     ("Zeynep Kaya", "zeynep", "23456789012", 24, "zeynep@example.com", "Zeynep12345", 1),
@@ -38,7 +38,7 @@ users = [
     ("Burak Koç", "burak", "78901234567", 34, "burak@example.com", "Burak12345", 0),
 ]
 
-# --- Insert users ---
+# add new users
 for user in users:
     try:
         cursor.execute("""
@@ -53,8 +53,7 @@ for user in users:
     except sqlite3.IntegrityError:
         print(f"Skipped existing user: {user[1]}")
 
-# --- Commit + close ---
 conn.commit()
 conn.close()
 
-print("User seeding finished.")
+print("seeding finished")

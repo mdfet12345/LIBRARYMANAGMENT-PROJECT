@@ -90,11 +90,16 @@ class CustomerDashboard(QWidget):
         self.fine_label = QLabel("Fines: $0.00")
         self.fine_label.setObjectName("fineLabel")
         self.fine_label.setAlignment(Qt.AlignCenter)
-
-        self.btn_browse = QPushButton("📚  Browse Books")
-        self.btn_cart = QPushButton("🛒  My Cart")
-        self.btn_personal = QPushButton("📖  Personal Books")
-        self.btn_requests = QPushButton("📩  Request a Book")
+        
+        # self.btn_browse = QPushButton("📚  Browse Books")
+        # self.btn_cart = QPushButton("🛒  My Cart")
+        # self.btn_personal = QPushButton("📖  Personal Books")
+        # self.btn_requests = QPushButton("📩  Request a Book")
+        # self.btn_logout = QPushButton("Logout")
+        self.btn_browse = QPushButton("  Browse Books")
+        self.btn_cart = QPushButton("  My Cart")
+        self.btn_personal = QPushButton("  Personal Books")
+        self.btn_requests = QPushButton("  Request a Book")
         self.btn_logout = QPushButton("Logout")
 
         for btn in [

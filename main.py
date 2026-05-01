@@ -9,12 +9,7 @@ font_path = os.path.join(base_dir, "fonts", "FRADM.TTF")
 
 font_id = QFontDatabase.addApplicationFont(font_path)
 
-
-
-# -------------------------
-# LOAD CUSTOM FONT (ONLY LOAD, DON'T APPLY)
-# -------------------------
-#font_id = QFontDatabase.addApplicationFont("fonts/FRADM.TTF")
+# load font
 
 if font_id != -1:
     family = QFontDatabase.applicationFontFamilies(font_id)[0]
@@ -22,14 +17,13 @@ if font_id != -1:
 else:
     print("Font failed to load")
 
-# -------------------------
-# SET CLEAN GLOBAL FONT
-# -------------------------
+# set font
+
 app.setFont(QFont("Segoe UI", 10))
 
-# -------------------------
-# START APP
-# -------------------------
+
+# start program
+
 window = MainWindow()
 window.show()
 

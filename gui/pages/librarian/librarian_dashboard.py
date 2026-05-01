@@ -69,9 +69,8 @@ class LibrarianDashboard(QWidget):
         main_layout.setContentsMargins(0, 0, 0, 0)
         main_layout.setSpacing(0)
 
-        # -------------------------
-        # SIDEBAR
-        # -------------------------
+        # sidebar
+        
         sidebar = QFrame()
         sidebar.setObjectName("sidebar")
         sidebar.setFixedWidth(250)
@@ -84,13 +83,14 @@ class LibrarianDashboard(QWidget):
         title.setObjectName("title")
         title.setAlignment(Qt.AlignCenter)
 
-        self.btn_dashboard = QPushButton("📊  Dashboard")
-        self.btn_books = QPushButton("📚  Manage Books")
-        self.btn_add_book = QPushButton("➕  Add Book")
-        self.btn_borrowed = QPushButton("📖  Borrowed Books")
-        self.btn_returns = QPushButton("🔄  Return Requests")
-        self.btn_members = QPushButton("👥  Members")
-        self.btn_messages = QPushButton("📩  Requests")
+        
+        self.btn_dashboard = QPushButton("  Dashboard")
+        self.btn_books = QPushButton("  Manage Books")
+        self.btn_add_book = QPushButton("  Add Book")
+        self.btn_borrowed = QPushButton("  Borrowed Books")
+        self.btn_returns = QPushButton("  Return Requests")
+        self.btn_members = QPushButton("  Members")
+        self.btn_messages = QPushButton("  Requests")
         self.btn_logout = QPushButton("Logout")
 
         for btn in [

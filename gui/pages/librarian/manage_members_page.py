@@ -124,14 +124,14 @@ class ManageMembersPage(QWidget):
 
         self.table.resizeColumnsToContents()
 
-        def get_selected_user_id(self):
-            selected_row = self.table.currentRow()
+    def get_selected_user_id(self):
+        selected_row = self.table.currentRow()
 
-            if selected_row < 0:
-                show_error(self, "Error", "Please select a member first.")
-                return None
+        if selected_row < 0:
+            show_error(self, "Error", "Please select a member first")
+            return None
 
-            return int(self.table.item(selected_row, 0).text())
+        return int(self.table.item(selected_row, 0).text())
 
     def verify_selected_member(self):
         user_id = self.get_selected_user_id()
@@ -139,14 +139,14 @@ class ManageMembersPage(QWidget):
             return
 
         selected_row = self.table.currentRow()
-        verified_status = self.table.item(selected_row, 5).text()
+        verified_status = self.table.item(selected_row, 6).text()
 
         if verified_status == "Yes":
-            show_info(self, "Already Verified", "This member is already verified.")
+            show_info(self, "Already Verified", "This member is already verified")
             return
 
         self.db.verify_user(user_id)
-        show_info(self, "Success", "Member verified successfully.")
+        show_info(self, "Success", "Member verified successfully")
         self.load_members()
 
     def unverify_selected_member(self):
@@ -155,31 +155,30 @@ class ManageMembersPage(QWidget):
             return
 
         selected_row = self.table.currentRow()
-        verified_status = self.table.item(selected_row, 5).text()
+        verified_status = self.table.item(selected_row, 6).text()
 
         if verified_status == "No":
-            show_info(self, "Already Unverified", "This member is already unverified.")
+            show_info(self, "Already Unverified", "This member is already unverified")
             return
 
         self.db.unverify_user(user_id)
-        show_info(self, "Success", "Member unverified successfully.")
+        show_info(self, "Success", "Member unverified successfully")
         self.load_members()
-
     def clear_selected_fines(self):
         user_id = self.get_selected_user_id()
         if user_id is None:
             return
 
         selected_row = self.table.currentRow()
-        fines_text = self.table.item(selected_row, 6).text()
+        fines_text = self.table.item(selected_row, 7).text()
         fines_amount = float(fines_text.replace("$", ""))
 
         if fines_amount == 0:
-            show_info(self, "No Fines", "This member has no fines to clear.")
+            show_info(self, "No Fines", "This member has no fines to clear")
             return
 
         self.db.clear_fines(user_id)
-        show_info(self, "Success", "Member fines cleared.")
+        show_info(self, "Success", "Member fines cleared")
         self.load_members()
 
     def delete_selected_member(self):
@@ -197,5 +196,5 @@ class ManageMembersPage(QWidget):
             return
 
         self.db.delete_user(user_id)
-        show_info(self, "Success", "Member deleted successfully.")
+        show_info(self, "Success", "Member deleted successfully")
         self.load_members()

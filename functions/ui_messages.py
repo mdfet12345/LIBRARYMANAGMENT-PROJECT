@@ -43,9 +43,9 @@ def _base_message(parent, title, message, icon):
     msg.exec_()
 
 
-# -------------------------
-# INFO
-# -------------------------
+
+# info
+
 def show_info(parent, title, message):
     _base_message(parent, title, message, QMessageBox.Information)
 
