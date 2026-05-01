@@ -711,8 +711,9 @@ class DatabaseManager:
 
             fine = condition_fines.get(condition, 0)
 
-            # Delay fine ($1 per day)
-            fine += delay_days * 1
+            # Delay fine ($5 per late day)
+            delay_fine = delay_days * 5
+            fine += delay_fine
 
             # Update user fine
             if fine > 0:
@@ -846,3 +847,30 @@ class DatabaseManager:
 
         conn.commit()
         conn.close()
+        
+    def get_all_borrowed_books(self):
+        conn = self.connect()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT
+                borrowed_books.id,
+                users.name,
+                users.username,
+                books.title,
+                borrowed_books.borrow_date,
+                borrowed_books.return_date,
+                CASE
+                    WHEN borrowed_books.return_date < DATE('now') THEN 'Overdue'
+                    ELSE 'On Time'
+                END AS return_status
+            FROM borrowed_books
+            JOIN users ON borrowed_books.user_id = users.id
+            JOIN books ON borrowed_books.book_id = books.id
+            WHERE borrowed_books.status = 'borrowed'
+            ORDER BY borrowed_books.borrow_date DESC
+        """)
+
+        records = cursor.fetchall()
+        conn.close()
+        return records

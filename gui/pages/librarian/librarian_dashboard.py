@@ -8,6 +8,7 @@ from gui.pages.librarian.manage_members_page import ManageMembersPage
 from gui.pages.librarian.add_book_page import AddBookPage
 from gui.pages.librarian.manage_books_page import ManageBooksPage
 from gui.pages.librarian.messages_page import LibrarianMessagesPage
+from gui.pages.librarian.borrowed_books_page import BorrowedBooksPage
 
 class LibrarianDashboard(QWidget):
     def __init__(self, main_window):
@@ -86,6 +87,7 @@ class LibrarianDashboard(QWidget):
         self.btn_dashboard = QPushButton("📊  Dashboard")
         self.btn_books = QPushButton("📚  Manage Books")
         self.btn_add_book = QPushButton("➕  Add Book")
+        self.btn_borrowed = QPushButton("📖  Borrowed Books")
         self.btn_returns = QPushButton("🔄  Return Requests")
         self.btn_members = QPushButton("👥  Members")
         self.btn_messages = QPushButton("📩  Requests")
@@ -95,6 +97,7 @@ class LibrarianDashboard(QWidget):
             self.btn_dashboard,
             self.btn_books,
             self.btn_add_book,
+            self.btn_borrowed,
             self.btn_returns,
             self.btn_members,
             self.btn_messages
@@ -110,6 +113,7 @@ class LibrarianDashboard(QWidget):
         sidebar_layout.addWidget(self.btn_dashboard)
         sidebar_layout.addWidget(self.btn_books)
         sidebar_layout.addWidget(self.btn_add_book)
+        sidebar_layout.addWidget(self.btn_borrowed)
         sidebar_layout.addWidget(self.btn_returns)
         sidebar_layout.addWidget(self.btn_members)
         sidebar_layout.addWidget(self.btn_messages)
@@ -125,6 +129,7 @@ class LibrarianDashboard(QWidget):
         self.page_dashboard = self.create_dashboard_page()
         self.page_books = ManageBooksPage(self.main_window)
         self.page_add_book = AddBookPage(self.main_window)
+        self.page_borrowed = BorrowedBooksPage(self.main_window)
         self.page_returns = ReturnRequestsPage(self.main_window)
         self.page_members = ManageMembersPage(self.main_window)
         self.page_messages = LibrarianMessagesPage(self.main_window)
@@ -132,6 +137,7 @@ class LibrarianDashboard(QWidget):
         self.stack.addWidget(self.page_dashboard)
         self.stack.addWidget(self.page_books)
         self.stack.addWidget(self.page_add_book)
+        self.stack.addWidget(self.page_borrowed)
         self.stack.addWidget(self.page_returns)
         self.stack.addWidget(self.page_members)
         self.stack.addWidget(self.page_messages)
@@ -145,6 +151,7 @@ class LibrarianDashboard(QWidget):
         self.btn_dashboard.clicked.connect(self.open_dashboard)
         self.btn_books.clicked.connect(self.open_books)
         self.btn_add_book.clicked.connect(lambda: self.stack.setCurrentWidget(self.page_add_book))
+        self.btn_borrowed.clicked.connect(self.open_borrowed_books)
         self.btn_returns.clicked.connect(self.open_returns)
         self.btn_members.clicked.connect(self.open_members)
         self.btn_messages.clicked.connect(self.open_messages)
@@ -291,4 +298,7 @@ class LibrarianDashboard(QWidget):
         self.page_messages.load_messages()
         self.page_messages.load_requests()
         self.stack.setCurrentWidget(self.page_messages)
+    def open_borrowed_books(self):
+        self.page_borrowed.load_borrowed_books()
+        self.stack.setCurrentWidget(self.page_borrowed)
     

@@ -374,7 +374,7 @@ class LibrarianBookCard(QFrame):
 
         status_label = QLabel(status_text)
         status_label.setAlignment(Qt.AlignCenter)
-        status_label.setObjectName("available" if available_copies > 0 else "borrowed")
+        status_label.setObjectName("available" if available_copies > 0 else "Out of Stock")
 
         button_row = QHBoxLayout()
         delete_btn = QPushButton("Delete")
