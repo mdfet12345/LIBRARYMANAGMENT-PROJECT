@@ -88,7 +88,7 @@ class AddBookPage(QWidget):
             "Novel", "Historical", "Religion", "Science", "Technology",
             "Programming", "Fantasy", "Classic", "Finance", "Business",
             "Self Development", "Philosophy", "Biography", "Mystery",
-            "Romance", "Poetry", "Education", "Health", "Politics", "Other"
+            "Romance", "Poetry", "Education", "Health", "Politics", "ِArabic", "Turkish", "Other"
         ])
 
         self.pages_input = QLineEdit()
