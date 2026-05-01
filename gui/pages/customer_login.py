@@ -118,3 +118,7 @@ class CustomerLoginPage(QWidget):
 
     def go_back(self):
         self.main_window.go_to_login_selection()
+        
+    def clear_fields(self):
+        self.username.clear()
+        self.password.clear()

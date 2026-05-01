@@ -68,11 +68,17 @@ class MainWindow(QMainWindow):
     def go_to_login_selection(self):
         self.stack.setCurrentWidget(self.page_login_selection)
 
-    def go_to_librarian(self):
+    def go_to_librarian_login(self):
+        self.page_librarian.clear_fields()
         self.stack.setCurrentWidget(self.page_librarian)
 
-    def go_to_customer(self):
+    def go_to_customer_login(self):
+        self.page_customer.clear_fields()
         self.stack.setCurrentWidget(self.page_customer)
+        
+    def go_to_register(self):
+        self.page_register.clear_fields()
+        self.stack.setCurrentWidget(self.page_register)
 
     def go_to_customer_dashboard(self):
         self.page_customer_dashboard.update_customer_info()

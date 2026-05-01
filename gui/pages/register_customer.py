@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QLabel,
-    QLineEdit, QPushButton, QFrame
+    QLineEdit, QPushButton, QFrame,
+    QCheckBox
 )
 from PyQt5.QtCore import Qt
 import re
@@ -95,6 +96,16 @@ class RegisterCustomerPage(QWidget):
         self.password = QLineEdit()
         self.password.setPlaceholderText("Password")
         self.password.setEchoMode(QLineEdit.Password)
+        
+        self.terms_checkbox = QCheckBox("I accept the Terms of Use and Privacy Policy")
+        self.terms_checkbox.setStyleSheet("""
+            QCheckBox {
+                background: transparent;
+                color: #2b2b2b;
+                font-size: 13px;
+            }
+        """)
+        
 
         register_btn = QPushButton("Create Account")
         back_btn = QPushButton("Back")
@@ -106,6 +117,7 @@ class RegisterCustomerPage(QWidget):
         card_layout.addWidget(self.email)
         card_layout.addWidget(self.password)
         card_layout.addSpacing(8)
+        card_layout.addWidget(self.terms_checkbox)
         card_layout.addWidget(register_btn)
         card_layout.addWidget(back_btn)
 
@@ -122,6 +134,10 @@ class RegisterCustomerPage(QWidget):
         age = self.age.text().strip()
         email = self.email.text().strip()
         password = self.password.text().strip()
+        
+        if not self.terms_checkbox.isChecked():
+            show_error(self, "Error", "You must accept the Terms of Use and Privacy Policy to register.")
+            return
 
         if not all([name, username, age, email, password]):
             show_error(self, "Error", "All fields are required")
@@ -176,6 +192,7 @@ class RegisterCustomerPage(QWidget):
         self.age.clear()
         self.email.clear()
         self.password.clear()
+        self.terms_checkbox.setChecked(False)
 
     def go_back(self):
         self.main_window.go_to_login_selection()
