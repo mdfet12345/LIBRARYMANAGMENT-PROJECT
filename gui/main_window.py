@@ -75,7 +75,7 @@ class MainWindow(QMainWindow):
     def go_to_customer_login(self):
         self.page_customer.clear_fields()
         self.stack.setCurrentWidget(self.page_customer)
-        
+
     def go_to_register(self):
         self.page_register.clear_fields()
         self.stack.setCurrentWidget(self.page_register)
@@ -87,7 +87,7 @@ class MainWindow(QMainWindow):
             self.page_customer_dashboard.page_browse
         )
         self.stack.setCurrentWidget(self.page_customer_dashboard)
-        
+
     def go_to_librarian_dashboard(self):
         self.page_librarian_dashboard.open_dashboard()
         self.stack.setCurrentWidget(self.page_librarian_dashboard)

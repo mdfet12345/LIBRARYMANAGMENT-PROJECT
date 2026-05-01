@@ -1,14 +1,13 @@
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QLabel, QScrollArea, QGridLayout,
     QLineEdit, QComboBox, QHBoxLayout, QFrame, QPushButton,
-    QDialog, QFormLayout, QFileDialog
+    QDialog, QFormLayout, QFileDialog, QMessageBox
 )
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap
 
 from database.database_manager import DatabaseManager
 from functions.ui_messages import show_info, show_error, show_confirm
-from PyQt5.QtWidgets import QMessageBox
 
 
 class ManageBooksPage(QWidget):
@@ -22,7 +21,9 @@ class ManageBooksPage(QWidget):
 
     def setup_ui(self):
         self.setStyleSheet("""
-            QWidget { background-color: #fafafa; }
+            QWidget {
+                background-color: #fafafa;
+            }
 
             QLabel#pageTitle {
                 font-size: 28px;
@@ -63,7 +64,7 @@ class ManageBooksPage(QWidget):
         self.category_filter.addItem("ALL")
 
         self.status_filter = QComboBox()
-        self.status_filter.addItems(["ALL", "Available", "Borrowed"])
+        self.status_filter.addItems(["ALL", "Available", "Out of Stock"])
 
         filter_layout.addWidget(self.search, 2)
         filter_layout.addWidget(self.category_filter, 1)
@@ -110,10 +111,8 @@ class ManageBooksPage(QWidget):
 
     def get_column_count(self):
         viewport_width = self.scroll.viewport().width()
-
         card_width = 215
         spacing = 18
-
         columns = (viewport_width + spacing) // (card_width + spacing)
 
         return max(4, columns)
@@ -122,6 +121,7 @@ class ManageBooksPage(QWidget):
         while self.grid.count():
             item = self.grid.takeAt(0)
             widget = item.widget()
+
             if widget:
                 widget.deleteLater()
 
@@ -157,10 +157,10 @@ class ManageBooksPage(QWidget):
             self.grid.addWidget(card, row, col)
 
             col += 1
+
             if col >= max_columns:
                 col = 0
                 row += 1
-
 
     def apply_filters(self):
         keyword = self.search.text().strip().lower()
@@ -270,15 +270,21 @@ class LibrarianBookCard(QFrame):
             }
 
             QLabel#available {
+                background-color: #e6f4ea;
                 color: #1f8f4d;
+                border-radius: 10px;
+                padding: 4px 10px;
                 font-size: 12px;
-                font-weight: 700;
+                font-weight: 800;
             }
 
-            QLabel#borrowed {
+            QLabel#outOfStock {
+                background-color: #fdecea;
                 color: #c0392b;
+                border-radius: 10px;
+                padding: 4px 10px;
                 font-size: 12px;
-                font-weight: 700;
+                font-weight: 800;
             }
 
             QPushButton {
@@ -313,7 +319,8 @@ class LibrarianBookCard(QFrame):
         available_copies = self.book_data[6]
         image_path = self.book_data[7]
 
-        status_text = "Available" if available_copies > 0 else "Borrowed"
+        is_available = available_copies > 0
+        status_text = "Available" if is_available else "Out of Stock"
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(14, 14, 14, 14)
@@ -335,27 +342,30 @@ class LibrarianBookCard(QFrame):
         image_box = QLabel()
         image_box.setAlignment(Qt.AlignCenter)
         image_box.setFixedHeight(100)
-
-        if image_path:
-            pixmap = QPixmap(image_path)
-            if not pixmap.isNull():
-                image_box.setPixmap(pixmap.scaled(
-                    125, 100,
-                    Qt.KeepAspectRatio,
-                    Qt.SmoothTransformation
-                ))
-            else:
-                image_box.setText("No Image")
-        else:
-            image_box.setText("No Image")
-
         image_box.setStyleSheet("""
             QLabel {
                 background-color: #f0f0f0;
                 border-radius: 10px;
                 color: #999999;
+                font-size: 12px;
             }
         """)
+
+        if image_path:
+            pixmap = QPixmap(image_path)
+
+            if not pixmap.isNull():
+                image_box.setPixmap(
+                    pixmap.scaled(
+                        125, 100,
+                        Qt.KeepAspectRatio,
+                        Qt.SmoothTransformation
+                    )
+                )
+            else:
+                image_box.setText("No Image")
+        else:
+            image_box.setText("No Image")
 
         title_label = QLabel(title)
         title_label.setObjectName("bookTitle")
@@ -374,11 +384,14 @@ class LibrarianBookCard(QFrame):
 
         status_label = QLabel(status_text)
         status_label.setAlignment(Qt.AlignCenter)
-        status_label.setObjectName("available" if available_copies > 0 else "Out of Stock")
+        status_label.setFixedHeight(26)
+        status_label.setObjectName("available" if is_available else "outOfStock")
 
         button_row = QHBoxLayout()
+
         delete_btn = QPushButton("Delete")
         delete_btn.setObjectName("deleteBtn")
+
         update_btn = QPushButton("Update")
 
         delete_btn.clicked.connect(lambda: self.delete_callback(book_id))
@@ -432,10 +445,13 @@ class UpdateBookDialog(QDialog):
                 padding: 9px;
                 font-weight: 700;
             }
+
+            QPushButton:hover {
+                background-color: #3a3a3a;
+            }
         """)
 
         layout = QVBoxLayout(self)
-
         form = QFormLayout()
 
         self.title_input = QLineEdit(self.book[1])
@@ -450,6 +466,7 @@ class UpdateBookDialog(QDialog):
         ])
 
         index = self.category_input.findText(self.book[3])
+
         if index >= 0:
             self.category_input.setCurrentIndex(index)
 
@@ -457,6 +474,7 @@ class UpdateBookDialog(QDialog):
         self.copies_input = QLineEdit(str(self.book[5]))
 
         self.image_label = QLabel(self.image_path if self.image_path else "No image selected")
+        self.image_label.setWordWrap(True)
 
         upload_btn = QPushButton("Change Image")
         upload_btn.clicked.connect(self.upload_image)
@@ -470,6 +488,7 @@ class UpdateBookDialog(QDialog):
         form.addRow("", upload_btn)
 
         btn_row = QHBoxLayout()
+
         save_btn = QPushButton("Save")
         cancel_btn = QPushButton("Cancel")
 
@@ -499,17 +518,17 @@ class UpdateBookDialog(QDialog):
         author = self.author_input.text().strip()
         pages = self.pages_input.text().strip()
         copies = self.copies_input.text().strip()
-        
+
+        if not all([title, author, pages, copies]):
+            show_error(self, "Error", "All fields are required.")
+            return
+
         if len(title) > 50:
             show_error(self, "Error", "Book title cannot exceed 50 characters.")
             return
 
         if len(author) > 30:
             show_error(self, "Error", "Author name cannot exceed 30 characters.")
-            return
-
-        if not all([title, author, pages, copies]):
-            show_error(self, "Error", "All fields are required.")
             return
 
         if not pages.isdigit() or int(pages) <= 0:
@@ -519,7 +538,6 @@ class UpdateBookDialog(QDialog):
         if not copies.isdigit() or int(copies) < 0:
             show_error(self, "Error", "Copies must be zero or more.")
             return
-
 
         self.accept()
 

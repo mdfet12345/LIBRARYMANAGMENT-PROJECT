@@ -103,10 +103,10 @@ class LoginSelectionPage(QWidget):
         register_btn.clicked.connect(self.register_customer)
 
     def go_librarian_login(self):
-        self.main_window.go_to_librarian()
+        self.main_window.go_to_librarian_login()
 
     def go_customer_login(self):
-        self.main_window.go_to_customer()
+        self.main_window.go_to_customer_login()
 
     def register_customer(self):
-        self.main_window.stack.setCurrentWidget(self.main_window.page_register)
+        self.main_window.go_to_register()
