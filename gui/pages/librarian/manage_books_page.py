@@ -190,6 +190,7 @@ class ManageBooksPage(QWidget):
 
         self.filtered_books = filtered
         self.display_books(self.filtered_books)
+        
 
     def delete_book(self, book_id):
         confirm = show_confirm(
@@ -201,9 +202,14 @@ class ManageBooksPage(QWidget):
         if confirm != QMessageBox.Yes:
             return
 
-        self.db.delete_book(book_id)
-        show_info(self, "Success", "Book deleted successfully")
-        self.load_books()
+        success, message = self.db.delete_book(book_id)
+
+        if success:
+            show_info(self, "Success", message)
+            self.load_books()
+        else:
+            show_error(self, "Error", message)
+            
 
     def update_book(self, book):
         dialog = UpdateBookDialog(self, book)

@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QLabel, QTableWidget,
-    QTableWidgetItem, QPushButton, QHBoxLayout
+    QTableWidgetItem, QPushButton, QHBoxLayout, QLineEdit
 )
 from PyQt5.QtCore import Qt
 
@@ -44,6 +44,19 @@ class ManageMembersPage(QWidget):
                 border: none;
                 font-weight: 700;
             }
+            
+            QLineEdit {
+                background-color: white;
+                border: 1px solid #dddddd;
+                border-radius: 8px;
+                padding: 10px 14px;
+                font-size: 14px;
+                color: #111111;
+            }
+
+            QLineEdit:focus {
+                border: 1px solid #2b2b2b;
+            }
 
             QPushButton {
                 background-color: #2b2b2b;
@@ -65,6 +78,9 @@ class ManageMembersPage(QWidget):
 
         title = QLabel("Manage Members")
         title.setObjectName("title")
+
+        self.search_input = QLineEdit()
+        self.search_input.setPlaceholderText("Search members by name, username, national ID, email, verification, or fines...")
 
         self.table = QTableWidget()
         self.table.setColumnCount(8)
@@ -89,6 +105,7 @@ class ManageMembersPage(QWidget):
         buttons_layout.addWidget(self.delete_btn)
 
         layout.addWidget(title)
+        layout.addWidget(self.search_input)
         layout.addWidget(self.table, 1)
         layout.addLayout(buttons_layout)
 
@@ -96,6 +113,7 @@ class ManageMembersPage(QWidget):
         self.unverify_btn.clicked.connect(self.unverify_selected_member)
         self.clear_fines_btn.clicked.connect(self.clear_selected_fines)
         self.delete_btn.clicked.connect(self.delete_selected_member)
+        self.search_input.textChanged.connect(self.filter_members)
 
     def load_members(self):
         users = self.db.get_all_users()
@@ -123,6 +141,24 @@ class ManageMembersPage(QWidget):
                 self.table.setItem(row_index, col_index, item)
 
         self.table.resizeColumnsToContents()
+        self.filter_members()
+    
+    
+    # search function    
+    def filter_members(self):
+        search_text = self.search_input.text().strip().lower()
+
+        for row in range(self.table.rowCount()):
+            row_matches = False
+
+            for col in range(self.table.columnCount()):
+                item = self.table.item(row, col)
+
+                if item and search_text in item.text().lower():
+                    row_matches = True
+                    break
+
+            self.table.setRowHidden(row, not row_matches)
 
     def get_selected_user_id(self):
         selected_row = self.table.currentRow()
@@ -148,6 +184,7 @@ class ManageMembersPage(QWidget):
         self.db.verify_user(user_id)
         show_info(self, "Success", "Member verified successfully")
         self.load_members()
+        
 
     def unverify_selected_member(self):
         user_id = self.get_selected_user_id()
@@ -164,6 +201,8 @@ class ManageMembersPage(QWidget):
         self.db.unverify_user(user_id)
         show_info(self, "Success", "Member unverified successfully")
         self.load_members()
+        
+        
     def clear_selected_fines(self):
         user_id = self.get_selected_user_id()
         if user_id is None:
@@ -183,6 +222,7 @@ class ManageMembersPage(QWidget):
 
     def delete_selected_member(self):
         user_id = self.get_selected_user_id()
+
         if user_id is None:
             return
 
@@ -195,6 +235,10 @@ class ManageMembersPage(QWidget):
         if confirm != QMessageBox.Yes:
             return
 
-        self.db.delete_user(user_id)
-        show_info(self, "Success", "Member deleted successfully")
-        self.load_members()
+        success, message = self.db.delete_user(user_id)
+
+        if success:
+            show_info(self, "Success", message)
+            self.load_members()
+        else:
+            show_error(self, "Error", message)

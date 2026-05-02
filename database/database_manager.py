@@ -133,12 +133,27 @@ class DatabaseManager:
         cursor = conn.cursor()
 
         cursor.execute("""
+            SELECT COUNT(*)
+            FROM borrowed_books
+            WHERE user_id = ?
+            AND status = 'borrowed'
+        """, (user_id,))
+
+        borrowed_count = cursor.fetchone()[0]
+
+        if borrowed_count > 0:
+            conn.close()
+            return False, "This member cannot be deleted because they are currently borrowing a book."
+
+        cursor.execute("""
             DELETE FROM users
             WHERE id = ?
         """, (user_id,))
 
         conn.commit()
         conn.close()
+
+        return True, "Member deleted successfully"
 
     def get_all_users(self):
         conn = self.connect()
@@ -205,12 +220,27 @@ class DatabaseManager:
         cursor = conn.cursor()
 
         cursor.execute("""
+            SELECT COUNT(*)
+            FROM borrowed_books
+            WHERE book_id = ?
+            AND status = 'borrowed'
+        """, (book_id,))
+
+        borrowed_count = cursor.fetchone()[0]
+
+        if borrowed_count > 0:
+            conn.close()
+            return False, "This book cannot be deleted because it is currently borrowed by a member."
+
+        cursor.execute("""
             DELETE FROM books
             WHERE id = ?
         """, (book_id,))
 
         conn.commit()
         conn.close()
+
+        return True, "Book deleted successfully"
 
     def update_book(self, book_id, title, author, category, pages, copies, image_path=None):
         conn = self.connect()
