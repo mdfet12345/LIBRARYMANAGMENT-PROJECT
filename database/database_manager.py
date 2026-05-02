@@ -348,7 +348,6 @@ class DatabaseManager:
             FROM users
             WHERE id = ?
         """, (user_id,))
-
         user = cursor.fetchone()
 
         if not user:
@@ -360,18 +359,30 @@ class DatabaseManager:
 
         if is_verified == 0:
             conn.close()
-            return False, "You aren't verified yet \nPlease wait for the librarian to verify you."
+            return False, "You aren't verified yet.\nPlease wait for the librarian to verify you."
 
         if fine_amount > 0:
             conn.close()
             return False, f"You cannot borrow books until you pay your fine of ${fine_amount}"
 
         cursor.execute("""
+            SELECT COUNT(*)
+            FROM borrowed_books
+            WHERE user_id = ?
+            AND status = 'borrowed'
+            AND return_date < DATE('now')
+        """, (user_id,))
+        overdue_count = cursor.fetchone()[0]
+
+        if overdue_count > 0:
+            conn.close()
+            return False, "You cannot borrow another book because you currently have an overdue book."
+
+        cursor.execute("""
             SELECT available_copies
             FROM books
             WHERE id = ?
         """, (book_id,))
-
         book = cursor.fetchone()
 
         if not book:
@@ -410,7 +421,6 @@ class DatabaseManager:
             FROM cart
             WHERE user_id = ?
         """, (user_id,))
-
         cart_count = cursor.fetchone()[0]
 
         cursor.execute("""
@@ -419,7 +429,6 @@ class DatabaseManager:
             WHERE user_id = ?
             AND status = 'borrowed'
         """, (user_id,))
-
         borrowed_count = cursor.fetchone()[0]
 
         if cart_count + borrowed_count >= 3:
@@ -498,13 +507,30 @@ class DatabaseManager:
                 FROM users
                 WHERE id = ?
             """, (user_id,))
-
             fine_result = cursor.fetchone()
-            fine_amount = fine_result[0] if fine_result and fine_result[0] is not None else 0
+
+            if not fine_result:
+                conn.close()
+                return False, "User not found"
+
+            fine_amount = fine_result[0] if fine_result[0] is not None else 0
 
             if fine_amount > 0:
                 conn.close()
                 return False, f"You cannot borrow books until you pay your fine of ${fine_amount}"
+
+            cursor.execute("""
+                SELECT COUNT(*)
+                FROM borrowed_books
+                WHERE user_id = ?
+                AND status = 'borrowed'
+                AND return_date < DATE('now')
+            """, (user_id,))
+            overdue_count = cursor.fetchone()[0]
+
+            if overdue_count > 0:
+                conn.close()
+                return False, "You cannot checkout because you currently have an overdue book."
 
             cursor.execute("""
                 SELECT cart.id, cart.book_id, cart.borrow_days, books.available_copies
@@ -512,7 +538,6 @@ class DatabaseManager:
                 JOIN books ON cart.book_id = books.id
                 WHERE cart.user_id = ?
             """, (user_id,))
-
             cart_items = cursor.fetchall()
 
             if not cart_items:
@@ -529,7 +554,7 @@ class DatabaseManager:
                 return_date = borrow_date + timedelta(days=borrow_days)
 
                 cursor.execute("""
-                    INSERT INTO borrowed_books
+                    INSERT INTO borrowed_books 
                     (user_id, book_id, borrow_date, return_date, status)
                     VALUES (?, ?, ?, ?, ?)
                 """, (
