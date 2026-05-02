@@ -69,7 +69,7 @@ class BrowseBooksPage(QWidget):
         self.category_filter.addItem("ALL")
 
         self.status_filter = QComboBox()
-        self.status_filter.addItems(["ALL", "Available", "Borrowed"])
+        self.status_filter.addItems(["ALL", "Available", "Currently Unavailable"])
 
         filter_layout.addWidget(self.search, 2)
         filter_layout.addWidget(self.category_filter, 1)
